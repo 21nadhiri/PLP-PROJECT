@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nadhiri Time Management</title>
+    <style>
+        :root {
+            --primary-color: #3a5a7c;
+            --secondary-color: #5b9aa0;
+            --bg-color: #e8f1f2;
+            --text-color: #333;
+            --light-text: #666;
+            --alert-color: #d64933;
+            --success-color: #3cb371;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-color);
+            background-image: 
+                linear-gradient(30deg, #f6f8f9 12%, transparent 12.5%, transparent 87%, #f6f8f9 87.5%, #f6f8f9),
+                linear-gradient(150deg, #f6f8f9 12%, transparent 12.5%, transparent 87%, #f6f8f9 87.5%, #f6f8f9),
+                linear-gradient(30deg, #f6f8f9 12%, transparent 12.5%, transparent 87%, #f6f8f9 87.5%, #f6f8f9),
+                linear-gradient(150deg, #f6f8f9 12%, transparent 12.5%, transparent 87%, #f6f8f9 87.5%, #f6f8f9),
+                linear-gradient(60deg, #f0f4f5 25%, transparent 25.5%, transparent 75%, #f0f4f5 75%, #f0f4f5),
+                linear-gradient(60deg, #f0f4f5 25%, transparent 25.5%, transparent 75%, #f0f4f5 75%, #f0f4f5);
+            background-size: 80px 140px;
+            background-position: 0 0, 0 0, 40px 70px, 40px 70px, 0 0, 40px 70px;
+            color: var(--text-color);
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        input, select, button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 5px rgba(91, 154, 160, 0.5);
+        }
+        button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        button:hover {
+            background: #4a6d8c;
+        }
+        #taskList {
+            list-style-type: none;
+            padding: 0;
+        }
+        #taskList li {
+            background: #fff;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border-left: 5px solid var(--secondary-color);
+        }
+        #taskList li:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+        .task-content {
+            flex-grow: 1;
+        }
+        .task-info {
+            font-size: 0.9em;
+            color: var(--light-text);
+            margin-top: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .task-info span {
+            background: #f0f4f5;
+            padding: 3px 8px;
+            border-radius: 3px;
+        }
+        .task-alert {
+            color: var(--alert-color);
+            font-weight: bold;
+        }
+        .delete-btn, .complete-btn, .start-btn {
+            padding: 8px 12px;
+            margin-left: 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 3px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .delete-btn {
+            background: var(--alert-color);
+            color: white;
+        }
+        .complete-btn {
+            background: var(--success-color);
+            color: white;
+        }
+        .start-btn {
+            background: var(--secondary-color);
+            color: white;
+        }
+        .completed {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+        #filters {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        #filters select {
+            width: 48%;
+        }
+        #stats {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1em;
+            color: var(--light-text);
+            background: #f0f4f5;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        #addTaskBtn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin: 20px 0;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        #addTaskBtn:hover {
+            background: #4a6d8c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Nadhiri Time Management</h1>
+        <input type="text" id="taskInput" placeholder="Enter a new task">
+        <select id="categorySelect">
+            <option value="">Select Category</option>
+            <option value="Work">Work</option>
+            <option value="Personal">Personal</option>
+            <option value="Study">Study</option>
+        </select>
+        <input type="datetime-local" id="dueDateInput">
+        <button id="addTaskBtn" onclick="addTask()">Add Task</button>
+        
+        <div id="filters">
+            <select id="categoryFilter" onchange="filterTasks()">
+                <option value="">All Categories</option>
+                <option value="Work">Work</option>
+                <option value="Personal">Personal</option>
+                <option value="Study">Study</option>
+            </select>
+            <select id="statusFilter" onchange="filterTasks()">
+                <option value="">All Status</option>
+                <option value="active">Active</option>
+                <option value="completed">Completed</option>
+            </select>
+        </div>
+        
+        <ul id="taskList"></ul>
+        
+        <div id="stats">
+            <span id="totalTasks">Total tasks: 0</span> |
+            <span id="completedTasks">Completed tasks: 0</span>
+        </div>
+    </div>
+
+    <script>
+        let tasks = [];
+
+        function addTask() {
+            const taskInput = document.getElementById('taskInput');
+            const categorySelect = document.getElementById('categorySelect');
+            const dueDateInput = document.getElementById('dueDateInput');
+            
+            if (taskInput.value !== '') {
+                const task = {
+                    id: Date.now(),
+                    text: taskInput.value,
+                    category: categorySelect.value,
+                    dueDate: new Date(dueDateInput.value),
+                    completed: false,
+                    startTime: null,
+                    timeSpent: 0
+                };
+                tasks.push(task);
+                renderTasks();
+                taskInput.value = '';
+                categorySelect.value = '';
+                dueDateInput.value = '';
+            }
+        }
+
+        function deleteTask(id) {
+            tasks = tasks.filter(task => task.id !== id);
+            renderTasks();
+        }
+
+        function toggleComplete(id) {
+            const task = tasks.find(task => task.id === id);
+            if (task) {
+                task.completed = !task.completed;
+                if (task.completed && task.startTime) {
+                    task.timeSpent += (new Date() - task.startTime) / 1000;
+                    task.startTime = null;
+                }
+                renderTasks();
+            }
+        }
+
+        function startTask(id) {
+            const task = tasks.find(task => task.id === id);
+            if (task && !task.startTime) {
+                task.startTime = new Date();
+                renderTasks();
+            }
+        }
+
+        function formatTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            return `${hours}h ${minutes}m`;
+        }
+
+        function renderTasks() {
+            const taskList = document.getElementById('taskList');
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            
+            taskList.innerHTML = '';
+            
+            const filteredTasks = tasks.filter(task => {
+                if (categoryFilter && task.category !== categoryFilter) return false;
+                if (statusFilter === 'active' && task.completed) return false;
+                if (statusFilter === 'completed' && !task.completed) return false;
+                return true;
+            });
+
+            filteredTasks.forEach(task => {
+                const li = document.createElement('li');
+                const now = new Date();
+                const timeLeft = (task.dueDate - now) / 1000; // in seconds
+                const isOverdue = timeLeft < 0;
+                const isNearDue = timeLeft > 0 && timeLeft < 24 * 60 * 60; // less than 24 hours
+
+                let timeSpent = task.timeSpent;
+                if (task.startTime) {
+                    timeSpent += (now - task.startTime) / 1000;
+                }
+
+                li.innerHTML = `
+                    <div class="task-content ${task.completed ? 'completed' : ''}">
+                        ${task.text}
+                        <div class="task-info">
+                            <span>Category: ${task.category}</span>
+                            <span>Due: ${task.dueDate.toLocaleString()}</span>
+                            <span>Time spent: ${formatTime(timeSpent)}</span>
+                            ${task.startTime ? `<span>Started: ${task.startTime.toLocaleString()}</span>` : ''}
+                            ${isOverdue ? '<span class="task-alert">Overdue!</span>' : ''}
+                            ${isNearDue ? '<span class="task-alert">Due soon!</span>' : ''}
+                        </div>
+                    </div>
+                    ${!task.completed ? `<button class="start-btn" onclick="startTask(${task.id})">${task.startTime ? 'In Progress' : 'Start'}</button>` : ''}
+                    <button class="complete-btn" onclick="toggleComplete(${task.id})">
+                        ${task.completed ? 'Undo' : 'Complete'}
+                    </button>
+                    <button class="delete-btn" onclick="deleteTask(${task.id})">Delete</button>
+                `;
+                taskList.appendChild(li);
+            });
+
+            updateStats();
+        }
+
+        function filterTasks() {
+            renderTasks();
+        }
+
+        function updateStats() {
+            const totalTasks = tasks.length;
+            const completedTasks = tasks.filter(task => task.completed).length;
+            document.getElementById('totalTasks').textContent = `Total tasks: ${totalTasks}`;
+            document.getElementById('completedTasks').textContent = `Completed tasks: ${completedTasks}`;
+        }
+
+        // Update tasks every minute to refresh time information
+        setInterval(renderTasks, 60000);
+
+        // Initial render
+        renderTasks();
+    </script>
+</body>
+</html>
+              
